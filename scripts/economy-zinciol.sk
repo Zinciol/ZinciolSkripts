@@ -1,0 +1,38 @@
+options:
+    outputMessagePrefix: <light blue><bold>ZINCIOL <dark grey>»
+
+command /eco <text> <player> <number>:
+    usage: {@outputMessagePrefix}<reset> <yellow>Usage: /eco <give|take|set> <player> <amount>
+    permission: zinciol.economy.manage
+    permission message: {@outputMessagePrefix}<reset> <red>You don't have permission to use /eco
+    aliases: /economy
+    trigger:
+        if arg-1 is "give":
+            set {_balanceBefore} to {balance::%arg-2's uuid%}
+            add arg-3 to {balance::%arg-2's uuid%}
+            send "{@outputMessagePrefix}<reset> <light green>You added $%arg-3% to %arg-2%'s balance of $%{_balanceBefore}%, which now is $%{balance::%arg-2's uuid%}%"
+        else if arg-1 is "take":
+            set {_balanceBefore} to {balance::%arg-2's uuid%}
+            if {balance::%arg-2's uuid%} >= arg-3:
+                remove arg-3 from {balance::%arg-2's uuid%}
+                send "{@outputMessagePrefix}<reset> <light green>You took $%arg-3% from %arg-2%'s balance of $%{_balanceBefore}%, which now is $%{balance::%arg-2's uuid%}%"
+            else:
+                send "{@outputMessagePrefix}<reset> <light red>%arg-2% does not have enough money to take $%arg-3% from it."
+        else if arg-1 is "set":
+            set {_balanceBefore} to {balance::%arg-2's uuid%}
+            set {balance::%arg-2's uuid%} to arg-3
+            send "{@outputMessagePrefix}<reset> <light green>You set %arg-2%'s balance of $%{_balanceBefore}%, to $%{balance::%arg-2's uuid%}%"
+        else:
+            send "{@outputMessagePrefix}<reset> <yellow>Usage: /eco <give|take|set> <player> <amount>"
+
+on tab complete of "/eco" and "/economy":
+    set tab completions for position 1 to "give", "take" and "set"
+
+
+command /config <text> [<text>]:
+    usage: {zinciol::outputMessagePrefix}<reset> %{zinciol::configCommandUsageMessage}%
+    trigger:
+        send "Config CMD"
+    
+on tab complete of "/config":
+    set tab completions for position 1 to {configCompletions::*}
